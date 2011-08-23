@@ -2,7 +2,8 @@
 
 Manage #! URLs
 
-[Check out a very simple demo](http://jimmybyrum.com/crosshatch.js/demo/)
+Check out a very simple demo here:
+http://jimmybyrum.com/crosshatch.js/demo/
 
 ## Usage
 
