@@ -6,7 +6,7 @@ Manage #! URLs
 
  * include crosshatch.js
  * define urls (in urls.js in my example)
- * call crosshatch.ready();
+ * call Crosshatch.ready();
 
 ## What would I use it for?
 
