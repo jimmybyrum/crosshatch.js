@@ -2,6 +2,8 @@
 
 Manage #! URLs
 
+[Check out a very simple demo](http://jimmybyrum.com/crosshatch.js/demo/)
+
 ## Usage
 
  * include crosshatch.js
