@@ -25,19 +25,29 @@ var Crosshatch = function() {
 		history = [];
 
 	// check for the console
-	if (window.console===undefined) {
-		var _null = function() {};
-		window.console = {
-			log: _null,
-			info: _null,
-			group: _null,
-			warn: _null,
-			error: _null,
-			debug: _null,
-			groupCollapsed: _null,
-			groupEnd: _null
-		};
+	var _console = function(_item, _alt) {
+		if(console[_item]===undefined) {
+			if(_alt!==undefined) {
+				console[_item] = _alt;
+			} else {
+				console[_item] = function() {};
+			}
+		}
+	};
+	// define console for older browsers
+	if(typeof console === "undefined") {
+		console = {};
 	}
+	_console("log");
+	_console("info");
+	_console("debug");
+	_console("error");
+	_console("trace");
+	_console("group");
+	_console("groupCollapsed", console.group);
+	_console("groupEnd");
+	_console("dir");
+	_console("dirxml");
 
 	// for updating the TITLE tag
 	var setTitle = function(_title) {
