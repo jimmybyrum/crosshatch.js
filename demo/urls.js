@@ -3,6 +3,7 @@ Crosshatch.route({
 	pattern: /^(\/|\/#|)$/,
 	controller: function(_self, _url) {
 		document.body.className = "home";
+		Crosshatch.setTitle("Home");
 	}
 });
 

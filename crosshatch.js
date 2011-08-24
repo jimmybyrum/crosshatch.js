@@ -24,6 +24,7 @@ var Crosshatch = function() {
 	var urls = {},
 		history = [];
 
+	// check for the console
 	if (window.console===undefined) {
 		var _null = function() {};
 		window.console = {

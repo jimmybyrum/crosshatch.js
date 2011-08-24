@@ -45,8 +45,9 @@ var _submit = document.getElementById("submit");
 
 addEvent(_search, "submit", function(e) {
 	e.preventDefault();
-	_results.innerHTML = "search results for " + _input.value;
+	_results.innerHTML = "Results for: " + _input.value;
 	Crosshatch.setLocation("/search/"+_input.value+"/");
+	Crosshatch.setTitle("Search results for " + _input.value);
 }, false);
 function doSearch(_term) {
 	_input.value = _term;
@@ -56,12 +57,14 @@ function clearSearch() {
 	_input.value = "";
 	_input.focus();
 	_results.innerHTML = "";
+	Crosshatch.setTitle("Search");
 }
 
 function loadSettings(_url) {
 	// fetch a page via ajax
 	xhr("GET", _url, {}, function(_response) {
-		document.body.className = "settings";
 		document.body.appendChild(_response);
+		document.body.className = "settings";
+		Crosshatch.setTitle("Settings");
 	});
 }
