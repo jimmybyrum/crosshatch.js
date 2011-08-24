@@ -127,8 +127,8 @@ var Crosshatch = function() {
 		route: router,
 		ready: loader,
 		loader: loader,
-		set_title: setTitle,
-		set_location: setLocation,
+		setTitle: setTitle,
+		setLocation: setLocation,
 		navigation_interval: navigation_interval
 	}
 }();

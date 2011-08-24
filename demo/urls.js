@@ -1,39 +1,35 @@
 Crosshatch.route({
 	url: "/",
-	pattern: /^(\/|)$/,
+	pattern: /^(\/|\/#|)$/,
 	controller: function(_self, _url) {
-		console.groupCollapsed("/");
-		console.log("_self: ", _self);
-		console.log("_url: ", _url);
-		console.groupEnd();
-		document.getElementById("content").innerHTML = "Home";
+		document.body.className = "home";
 	}
 });
 
 Crosshatch.route({
-	url: "/page{number}",
-	pattern: /^\/page([\d]+)$/,
+	url: "/search/",
+	pattern: /^\/search\/$/,
 	controller: function(_self, _url) {
-		var _page = _url.replace(_self.pattern, "$1");
-		console.groupCollapsed("/page{number}");
-		console.log("_self: ", _self);
-		console.log("_url: ", _url);
-		console.log("_page: ", _page);
-		console.groupEnd();
-		document.getElementById("content").innerHTML = "Page " + _page;
+		document.body.className = "search";
+		clearSearch();
 	}
 });
 
 Crosshatch.route({
-	url: "/page1/{subsection}",
-	pattern: /^\/page1\/([\d\w_\-]+)$/,
+	url: "/search/{term}/",
+	pattern: /^\/search\/([\d\w\s+_\-%,"']*)\/$/,
 	controller: function(_self, _url) {
-		var _subsection = _url.replace(_self.pattern, "$1");
-		console.groupCollapsed("/page1/{subsection}");
-		console.log("_self: ", _self);
-		console.log("_url: ", _url);
-		console.log("_subsection: ", _subsection);
-		console.groupEnd();
-		document.getElementById("content").innerHTML = "Page 1" + _subsection;
+		document.body.className = "search";
+		// get the search term from the url
+		var _term = _url.replace(_self.pattern, "$1");
+		doSearch(_term);
+	}
+});
+
+Crosshatch.route({
+	url: "/settings/",
+	pattern: /^\/settings\/$/,
+	controller: function(_self, _url) {
+		loadSettings(_url);
 	}
 });
