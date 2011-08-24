@@ -62,7 +62,6 @@ function clearSearch() {
 
 function loadSettings(_url) {
 	// fetch a page via ajax
-	_url = _url.substring(1);
 	var _exists = document.getElementById("settings");
 	if (_exists === null) {
 		xhr("GET", "html", _url, {}, function(_response) {

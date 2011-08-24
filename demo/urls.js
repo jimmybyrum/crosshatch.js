@@ -28,9 +28,17 @@ Crosshatch.route({
 });
 
 Crosshatch.route({
-	url: "/settings.html",
-	pattern: /^\/settings\.html$/,
+	url: "/settings/",
+	pattern: /^\/settings\/$/,
 	controller: function(_self, _url) {
-		loadSettings(_url);
+		loadSettings("settings.html");
+	}
+});
+
+Crosshatch.route({
+	url: "/github/",
+	pattern: /^\/github\/$/,
+	controller: function(_self, _url) {
+		document.body.className = "github";	
 	}
 });
