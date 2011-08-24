@@ -28,8 +28,8 @@ Crosshatch.route({
 });
 
 Crosshatch.route({
-	url: "/settings/",
-	pattern: /^\/settings\/$/,
+	url: "/settings.html",
+	pattern: /^\/settings\.html$/,
 	controller: function(_self, _url) {
 		loadSettings(_url);
 	}

@@ -7,7 +7,7 @@ function addEvent(element, action, callback, bubble) {
     }
 }
 
-function xhr(_type, _url, _params, _callback, _failure) {
+function xhr(_type, _format, _url, _params, _callback, _failure) {
 	_type = _type || "GET";
 	try {
 		var _xhr = new XMLHttpRequest();
@@ -23,11 +23,11 @@ function xhr(_type, _url, _params, _callback, _failure) {
 		}
 		_xhr.onreadystatechange = function() {
 			if (_xhr.readyState === 4) {
-				var _json = "";
-				if (_xhr.responseText && _xhr.responseText !== "") {
-					_json = eval("(" + _xhr.responseText + ")");
+				var _response = _xhr.responseText;
+				if (_format==="json" && _response!=="") {
+					_response = eval("(" + _xhr.responseText + ")");
 				}
-				_callback(_json);
+				_callback(_response);
 			}
 		}
 	} catch (e) {
@@ -62,9 +62,15 @@ function clearSearch() {
 
 function loadSettings(_url) {
 	// fetch a page via ajax
-	xhr("GET", _url, {}, function(_response) {
-		document.body.appendChild(_response);
-		document.body.className = "settings";
-		Crosshatch.setTitle("Settings");
-	});
+	_url = _url.substring(1);
+	var _exists = document.getElementById("settings");
+	if (_exists === null) {
+		xhr("GET", "html", _url, {}, function(_response) {
+			var _html = document.createElement("div");
+			_html.innerHTML = _response;
+			document.body.appendChild(_html.childNodes[0]);
+		});
+	}
+	document.body.className = "settings";
+	Crosshatch.setTitle("Settings");
 }
