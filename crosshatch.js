@@ -1,8 +1,8 @@
 /****************************************************************
 
-crosshatch
+crosshatch.js
 
-@description: crosshatch manages crosshatch urls for web apps
+@description: crosshatch manages crosshatch (#) urls for web apps
 @author: Jimmy Byrum <me@jimmybyrum.com>
 @version: 0.1
 
@@ -22,12 +22,14 @@ Crosshatch.route({
 
 var Crosshatch = function() {
 	var urls = {},
-		history = [];
+		history = [],
+		beforeLoad = function() {},
+		afterLoad = function() {};
 
 	// check for the console
 	var _console = function(_item, _alt) {
-		if(console[_item]===undefined) {
-			if(_alt!==undefined) {
+		if (console[_item] === undefined) {
+			if (_alt !== undefined) {
 				console[_item] = _alt;
 			} else {
 				console[_item] = function() {};
@@ -35,7 +37,7 @@ var Crosshatch = function() {
 		}
 	};
 	// define console for older browsers
-	if(typeof console === "undefined") {
+	if (typeof console === "undefined") {
 		console = {};
 	}
 	_console("log");
@@ -60,10 +62,10 @@ var Crosshatch = function() {
 		_location = _location.replace("%21", "!");
 		
 		// ignore the #!
-		if (_location.indexOf("#!")===0) { _location = _location.substring(2); }
+		if (_location.indexOf("#!") === 0) { _location = _location.substring(2); }
 		console.info("Crosshatch.setLocation()", _location);
 		
-		if (_location==="previous") {
+		if (_location === "previous") {
 			var _previous;
 			if (history.length>1) {
 				history.pop();
@@ -83,7 +85,7 @@ var Crosshatch = function() {
 				_location = _location.replace(/#!\//, "/");
 				_location = "#!"+_location;
 			}
-			document.location.href=_location;
+			document.location.href = _location;
 		}
 	};
 	
@@ -98,6 +100,7 @@ var Crosshatch = function() {
 	
 	// figures out which #! view we're on and calls that view's controller
 	var loader = function() {
+		beforeLoad();
 		var _url = window.location.hash.replace(/#!\//, "/");
 		console.groupCollapsed("Crosshatch.loader("+_url+")");
 		console.debug("History:", history);
@@ -117,10 +120,19 @@ var Crosshatch = function() {
 			}
 		}
 		history.push(_url);
+		afterLoad();
+	};
+	
+	var ready = function(_callback) {
+		loader();
+		if (typeof _callback === "function") {
+			_callback();
+		}
 	};
 	
 	// set up crosshatch navigation listener
-	var navigation_interval;
+	var navigation_interval,
+		navigation_interval_timeout = 500;
 	if ("onhashchange" in window) {
 		// newer browsers use onhashchange
 		console.info("onhashchange navigation");
@@ -128,7 +140,7 @@ var Crosshatch = function() {
 	} else {
 		// older browsers use an interval
 		console.info("interval navigation");
-		navigation_interval = setInterval(loader, 500);
+		navigation_interval = setInterval(loader, navigation_interval_timeout);
 	}
 	
 	// return content/functions that we want to be public
@@ -136,10 +148,13 @@ var Crosshatch = function() {
 		urls: urls,
 		history: history,
 		route: router,
-		ready: loader,
-		loader: loader,
+		ready: ready,
+		load: loader,
+		beforeLoad: beforeLoad,
+		afterLoad: afterLoad,
 		setTitle: setTitle,
 		setLocation: setLocation,
-		navigation_interval: navigation_interval
+		navigation_interval: navigation_interval,
+		navigation_interval_timeout: navigation_interval_timeout
 	}
 }();
