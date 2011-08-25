@@ -153,8 +153,6 @@ var Crosshatch = function() {
 		beforeLoad: beforeLoad,
 		afterLoad: afterLoad,
 		setTitle: setTitle,
-		setLocation: setLocation,
-		navigation_interval: navigation_interval,
-		navigation_interval_timeout: navigation_interval_timeout
+		setLocation: setLocation
 	}
 }();
