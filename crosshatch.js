@@ -43,6 +43,7 @@ var Crosshatch = function() {
 	_console("log");
 	_console("info");
 	_console("debug");
+	_console("warn");
 	_console("error");
 	_console("trace");
 	_console("group");
@@ -100,7 +101,6 @@ var Crosshatch = function() {
 	
 	// figures out which #! view we're on and calls that view's controller
 	var loader = function() {
-		beforeLoad();
 		var _url = window.location.hash.replace(/#!\//, "/");
 		console.groupCollapsed("Crosshatch.loader("+_url+")");
 		console.debug("History:", history);
@@ -111,6 +111,7 @@ var Crosshatch = function() {
 		if (_previous!==undefined) { _previous = _previous.replace(/(%22)/g, '"'); }
 		if (_url===_previous) { return false; }
 		
+		beforeLoad(_url, _previous);
 		var i;
 		for (i in urls) {
 			//console.log("match", _url, urls[i].pattern);
@@ -120,7 +121,7 @@ var Crosshatch = function() {
 			}
 		}
 		history.push(_url);
-		afterLoad();
+		afterLoad(_url, _previous);
 	};
 	
 	var ready = function(_callback) {
@@ -150,8 +151,8 @@ var Crosshatch = function() {
 		route: router,
 		ready: ready,
 		load: loader,
-		beforeLoad: beforeLoad,
-		afterLoad: afterLoad,
+		beforeLoad: function(_beforeLoad) { beforeLoad = _beforeLoad; },
+		afterLoad: function(_afterLoad) { afterLoad = _afterLoad; },
 		setTitle: setTitle,
 		setLocation: setLocation
 	}
