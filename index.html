@@ -1,1 +1,45 @@
-crosshatch.js page
+<!DOCTYPE html>
+<html>
+<head>
+<title>crosshatch demo</title>
+<style type="text/css">
+.page {
+	display: none;
+}
+.home #home,
+.search #search,
+.settings #settings,
+.github #github {
+	display: block;
+}
+</style>
+</head>
+<body>
+
+<nav>
+	<ul>
+		<li><a href="#">Home</a></li>
+		<li><a href="#!/search/">Search</a></li>
+		<li><a href="#!/settings/">Settings</a></li>
+		<li><a href="#!/github/">GitHub</a></li>
+	</ul>
+</nav>
+<div id="home" class="page">Home</div>
+<form id="search" class="page" action="/search/">
+	<label for="q">Search for: </label>
+	<input type="text" name="q" id="q">
+	<input type="submit" id="submit" value="search">
+	<div id="results"></div>
+</form>
+<div id="github" class="page">
+	<a href="https://github.com/jimmybyrum/crosshatch.js">Fork crosshatch.js on GitHub</a>
+</div>
+
+<script type="text/javascript" src="crosshatch.js"></script>
+<script type="text/javascript" src="demo.js"></script>
+<script type="text/javascript" src="urls.js"></script>
+<script type="text/javascript">
+Crosshatch.ready();
+</script>
+</body>
+</html>
