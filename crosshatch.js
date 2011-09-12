@@ -81,9 +81,10 @@ var Crosshatch = function() {
 			if (_location==="") {
 				_location = "#";
 			} else if (_location!=="#") {
-				_location = _location.replace(/"/g, "%22");
-				_location = _location.replace(/[ ]/g, "+");
-				_location = _location.replace(/#!\//, "/");
+			        _location = _location.replace(/#!\//, "/");
+			        _location = encodeURIComponent(_location);
+				_location = _location.replace(/%20/g, "+");
+			        _location = _location.replace(/%2F/g, "/");
 				_location = "#!"+_location;
 			}
 			document.location.href = _location;
