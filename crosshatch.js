@@ -23,9 +23,12 @@ Crosshatch.route({
 var Crosshatch = function() {
     var urls = {},
         history = [],
+        can_manage_history = ("pushState" in window.history),
+        base_path = window.location.pathname,
+        view = 0,
         beforeLoad = function() {},
         afterLoad = function() {};
-
+    
     // check for the console
     var _console = function(_item, _alt) {
         if (console[_item] === undefined) {
@@ -65,9 +68,8 @@ var Crosshatch = function() {
     };
     
     var _decode = function(_string) {
-        console.debug(_string);
+        _string = _string.replace(/\//g, "%2F");
         _string = _string.replace(/\+/g, "%20");
-        _string = _string.replace(/\//g, "%2F");    
         _string = decodeURIComponent(_string);
         return _string;
     };
@@ -82,17 +84,8 @@ var Crosshatch = function() {
         console.info("Crosshatch.setLocation()", _location);
         
         if (_location === "previous") {
-            var _previous;
-            if (history.length>1) {
-                history.pop();
-                _previous = history[(history.length-1)];
-            } else {
-                _previous = "#";
-            }
-            
-            console.info("previous:", _previous);
-            setLocation(_previous);
-        } else if (_location!=="refresh") {
+            window.history.back();
+        } else {
             if (_location==="") {
                 _location = "#";
             } else if (_location!=="#") {
@@ -121,8 +114,10 @@ var Crosshatch = function() {
         console.groupEnd();
         
         var _previous = history[history.length-1];
-        //console.debug(_previous, _url);
+        //console.debug("previous: " + _previous);
+        //console.debug("url:      " + _url);
         if (_previous!==undefined) { _previous = _decode(_previous); }
+        //console.debug(_url===_previous);
         if (_url===_previous) { return false; }
         
         beforeLoad(_url, _previous);
