@@ -57,6 +57,21 @@ var Crosshatch = function() {
         document.title = _title;
     };
     
+    var _encode = function(_string) {
+        _string = encodeURIComponent(_string);
+        _string = _string.replace(/%20/g, "+");
+        _string = _string.replace(/%2F/g, "/");
+        return _string;
+    };
+    
+    var _decode = function(_string) {
+        console.debug(_string);
+        _string = _string.replace(/\+/g, "%20");
+        _string = _string.replace(/\//g, "%2F");    
+        _string = decodeURIComponent(_string);
+        return _string;
+    };
+    
     // updates the location fragment after the crosshatch
     var setLocation = function(_location) {
         // sometimes ! comes through as %21 - need to look into this
@@ -82,9 +97,7 @@ var Crosshatch = function() {
                 _location = "#";
             } else if (_location!=="#") {
                 _location = _location.replace(/#!\//, "/");
-                _location = encodeURIComponent(_location);
-                _location = _location.replace(/%20/g, "+");
-                _location = _location.replace(/%2F/g, "/");
+                _location = _encode(_location);
                 _location = "#!"+_location;
             }
             document.location.href = _location;
@@ -109,7 +122,7 @@ var Crosshatch = function() {
         
         var _previous = history[history.length-1];
         //console.debug(_previous, _url);
-        if (_previous!==undefined) { _previous = _previous.replace(/(%22)/g, '"'); }
+        if (_previous!==undefined) { _previous = _decode(_previous); }
         if (_url===_previous) { return false; }
         
         beforeLoad(_url, _previous);
@@ -152,6 +165,8 @@ var Crosshatch = function() {
         route: router,
         ready: ready,
         load: loader,
+        encode: _encode,
+        decode: _decode,
         beforeLoad: function(_beforeLoad) { beforeLoad = _beforeLoad; },
         afterLoad: function(_afterLoad) { afterLoad = _afterLoad; },
         setTitle: setTitle,
