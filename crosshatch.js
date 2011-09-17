@@ -23,8 +23,8 @@ Crosshatch.route({
 var Crosshatch = function() {
     var urls = {},
         history = [],
-        use_crosshatch = true,
         can_manage_history = ("pushState" in window.history),
+        base_path = window.location.pathname,
         view = 0,
         beforeLoad = function() {},
         afterLoad = function() {};
@@ -84,21 +84,8 @@ var Crosshatch = function() {
         console.info("Crosshatch.setLocation()", _location);
         
         if (_location === "previous") {
-            var _previous = "#";
-            if (history.length>1) {
-                history.pop();
-                _previous = history[(history.length-1)];
-            }
-            
-            console.info("previous:", _previous);
-            if (can_manage_history) {
-                view += 1;
-                console.debug("pushState()", view, _previous);
-                window.history.pushState(view, "", _previous);
-            } else {
-                setLocation(_previous);
-            }
-        } else if (_location!=="refresh") {
+            window.history.back();
+        } else {
             if (_location==="") {
                 _location = "#";
             } else if (_location!=="#") {
@@ -106,13 +93,7 @@ var Crosshatch = function() {
                 _location = _encode(_location);
                 _location = "#!"+_location;
             }
-            if (can_manage_history) {
-                view += 1;
-                console.debug("pushState()", view, _location);
-                window.history.pushState(view, "", _location);
-            } else {
-                document.location.href = _location;
-            }
+            document.location.href = _location;
         }
     };
     
@@ -148,13 +129,7 @@ var Crosshatch = function() {
                 break;
             }
         }
-        if (can_manage_history) {
-            view += 1;
-            console.debug("pushState()", view, _url);
-            window.history.pushState(view, "", _url);
-        } else {
-            history.push(_url);
-        }
+        history.push(_url);
         afterLoad(_url, _previous);
     };
     
@@ -176,18 +151,6 @@ var Crosshatch = function() {
         // older browsers use an interval
         console.info("interval navigation");
         navigation_interval = setInterval(loader, navigation_interval_timeout);
-    }
-    
-    if (can_manage_history) {
-        var _onPopState = function() {
-            var _current_state = window.history.state;
-            console.debug(_current_state);
-        };
-        if (window.addEventListener !== undefined) {
-            window.addEventListener("popstate", _onPopState, true);
-        } else if (window.attachEvent !== undefined) {
-            window.attachEvent("onpopstate", _onPopState);
-        }
     }
     
     // return content/functions that we want to be public
