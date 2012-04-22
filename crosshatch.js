@@ -4,7 +4,7 @@ crosshatch.js
 
 @description: crosshatch manages crosshatch (#) urls for web apps
 @author: Jimmy Byrum <me@jimmybyrum.com>
-@version: 0.2
+@version: 0.3
 
 # URLs
 You need to "route" #! urls before you can use them.
@@ -21,10 +21,10 @@ Crosshatch.route({
 ****************************************************************/
 
 var Crosshatch = function() {
-    var version = 0.2,
-    	urls = {},
+    var version = 0.3,
+        urls = {},
         history = [],
-        can_manage_history = ("pushState" in window.history),
+        can_manage_history = ("pushState" in window.history) && navigator.userAgent.match(/Android/)===null,
         base_path = window.location.pathname,
         view = 0,
         online = false,
@@ -53,7 +53,7 @@ var Crosshatch = function() {
     
     // updates the location fragment after the crosshatch
     var setLocation = function(_location) {
-    	if (!online) { return false; }
+        if (!online) { return false; }
         // sometimes ! comes through as %21 - need to look into this
         _location = _location.replace("%21", "!");
         
@@ -62,7 +62,11 @@ var Crosshatch = function() {
         //console.info("Crosshatch.setLocation()", _location);
         
         if (_location === "previous") {
-            window.history.back();
+            if (window.history.length>2) {
+                window.history.back();
+            } else {
+                document.location.href = "#";
+            }
         } else {
             if (_location==="") {
                 _location = "#";
@@ -73,6 +77,15 @@ var Crosshatch = function() {
             }
             document.location.href = _location;
         }
+    };
+    
+    var replaceLocation = function(_location) {
+        if (can_manage_history) {
+            window.history.replaceState(_location, "", _location);
+        } else {
+            document.location.href=_location;
+        }
+        loader();
     };
     
     // sets up the urls array
@@ -86,7 +99,7 @@ var Crosshatch = function() {
     
     // figures out which #! view we're on and calls that view's controller
     var loader = function() {
-    	if (!online) { return false; }
+        if (!online) { return false; }
         setTimeout(function() {
             var _url = window.location.hash.replace(/#!\//, "/");
             //console.groupCollapsed("Crosshatch.loader("+_url+")");
@@ -115,7 +128,7 @@ var Crosshatch = function() {
     };
     
     var ready = function(_callback) {
-    	online = true;
+        online = true;
         loader();
         if (typeof _callback === "function") {
             _callback();
@@ -137,7 +150,7 @@ var Crosshatch = function() {
     
     // return content/functions that we want to be public
     return {
-    	version: version,
+        version: version,
         urls: urls,
         history: history,
         route: router,
@@ -151,6 +164,7 @@ var Crosshatch = function() {
         afterLoad: function(_afterLoad) { afterLoad = _afterLoad; },
         setTransitionDelay: function(_delay) { transition_delay = _delay; },
         setTitle: setTitle,
-        setLocation: setLocation
+        setLocation: setLocation,
+        replaceLocation: replaceLocation
     }
 }();
