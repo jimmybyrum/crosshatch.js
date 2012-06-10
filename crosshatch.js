@@ -4,7 +4,7 @@ crosshatch.js
 
 @description: crosshatch manages crosshatch (#) urls for web apps
 @author: Jimmy Byrum <me@jimmybyrum.com>
-@version: 0.2
+@version: 0.4
 
 # URLs
 You need to "route" #! urls before you can use them.
@@ -26,7 +26,7 @@ var Crosshatch = function() {
         history = [],
         can_manage_history = ("pushState" in window.history) && navigator.userAgent.match(/Android/)===null,
         base_path = window.location.pathname,
-        view = 0,
+        view = undefined,
         online = false,
         beforeLoad = function() {},
         afterLoad = function() {},
@@ -87,6 +87,15 @@ var Crosshatch = function() {
         }
         loader();
     };
+
+    var pushLocation = function(_location) {
+        if (can_manage_history) {
+            window.history.pushState(_location, "", _location);
+        } else {
+            document.location.href=_location;
+        }
+        loader();
+    };    
     
     // sets up the urls array
     var router = function(_config) {
@@ -118,7 +127,9 @@ var Crosshatch = function() {
             for (i in urls) {
                 //console.log("match", _url, urls[i].pattern);
                 if (_url.match(urls[i].pattern)) {
-                    urls[i].controller(urls[i], _url);
+                    view = urls[i];
+                    view.url = i;
+                    view.controller(view, _url);
                     break;
                 }
             }
@@ -158,6 +169,7 @@ var Crosshatch = function() {
         load: loader,
         encode: _encode,
         decode: _decode,
+        getCurrentView: function() { return view; },
         historyLength: function() { return history.length; },
         clearHistory: function() { history = []; },
         beforeLoad: function(_beforeLoad) { beforeLoad = _beforeLoad; },
@@ -165,6 +177,7 @@ var Crosshatch = function() {
         setTransitionDelay: function(_delay) { transition_delay = _delay; },
         setTitle: setTitle,
         setLocation: setLocation,
-        replaceLocation: replaceLocation
+        replaceLocation: replaceLocation,
+        pushLocation: pushLocation
     }
 }();
