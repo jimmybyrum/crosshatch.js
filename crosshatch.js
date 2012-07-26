@@ -21,12 +21,13 @@ Crosshatch.route({
 ****************************************************************/
 
 var Crosshatch = function() {
-    var version = 0.3,
+    var version = 0.4,
         urls = {},
         history = [],
         can_manage_history = ("pushState" in window.history) && navigator.userAgent.match(/Android/)===null,
         base_path = window.location.pathname,
         view = undefined,
+        previous = undefined,
         online = false,
         beforeLoad = function() {},
         afterLoad = function() {},
@@ -95,20 +96,30 @@ var Crosshatch = function() {
             document.location.href=_location;
         }
         loader();
-    };    
+    };
+
+    var isLoggedIn = function() {
+        return true;
+    };
+
+    var sendToLogin = function(view, _url) {
+        console.warn("login required. what do I do?\nPass a function to setSendToLogin, e.g.\nCrosshatch.setSendToLogin(function(_view, _url) {\n\t// do login stuff here.\n});\nto configure this properly.");
+    };
     
     // sets up the urls array
     var router = function(_config) {
         //console.info("Crosshatch.router()", _config);
         urls[_config.url] = {
+            login_required: _config.login_required===true,
             pattern: _config.pattern,
             controller: _config.controller
         };
     };
     
     // figures out which #! view we're on and calls that view's controller
-    var loader = function() {
+    var loader = function(_force) {
         if (!online) { return false; }
+        if (_force===undefined) { _force = false; }
         setTimeout(function() {
             var _url = window.location.hash.replace(/#!\//, "/");
             //console.groupCollapsed("Crosshatch.loader("+_url+")");
@@ -120,16 +131,24 @@ var Crosshatch = function() {
             //console.debug("url:      " + _url);
             if (_previous!==undefined) { _previous = _decode(_previous); }
             //console.debug(_url===_previous);
-            if (_url===_previous) { return false; }
+            if (_url===_previous && _force) { return false; }
             
             beforeLoad(_url, _previous);
             var i;
             for (i in urls) {
                 //console.log("match", _url, urls[i].pattern);
                 if (_url.match(urls[i].pattern)) {
+                    if (view!==undefined) {
+                        previous = view;
+                    }
                     view = urls[i];
                     view.url = i;
-                    view.controller(view, _url);
+                    view.uri = _url;
+                    if (view.login_required && !isLoggedIn()) {
+                        sendToLogin(view, _url);
+                    } else {
+                        view.controller(view, _url);
+                    }
                     break;
                 }
             }
@@ -167,9 +186,15 @@ var Crosshatch = function() {
         route: router,
         ready: ready,
         load: loader,
+        start: function() { history = []; ready(); },
+        reload: function() { loader(true); },
         encode: _encode,
         decode: _decode,
+        setIsLoggedIn: function(_function) { isLoggedIn = _function; },
+        setSendToLogin: function(_function) { sendToLogin = _function; },
         getCurrentView: function() { return view; },
+        getCurrentLocation: function() { if (view!==undefined) { return view.url; } return undefined; },
+        getPreviousLocation: function() { if (previous!==undefined) { return previous.uri; } return "#"; },
         historyLength: function() { return history.length; },
         clearHistory: function() { history = []; },
         beforeLoad: function(_beforeLoad) { beforeLoad = _beforeLoad; },
